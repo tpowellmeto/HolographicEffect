@@ -1,0 +1,19 @@
+{
+  "name": "HolographicEffect",
+  "version": "0.0.0",
+  "authors": [
+    "Thomas Powell <t.powell.meto@gmail.com>"
+  ],
+  "description": "a holographic effect for THREEjs",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "three.js": "threejs#*"
+  }
+}

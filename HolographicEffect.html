@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>three.js webgl - effects - holographic</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            background: #777;
+            padding: 0;
+            margin: 0;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        #info {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            color: #ffffff;
+            padding: 5px;
+            font-family: Monospace;
+            font-size: 13px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        a {
+            color: #ffffff;
+        }
+
+        #oldie a {
+            color: #da0
+        }
+    </style>
+</head>
+
+<body>
+
+<script src="bower_components/three.js/build/three.min.js"></script>
+
+<script src="js/effects/HolographicEffect.js"></script>
+
+<script src="js/Detector.js"></script>
+
+<script>
+
+    if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+    var container;
+
+    var camera, scene, renderer, effect;
+    var cube, plane, directionalLight;
+
+//    var mouseX = 0, mouseY = 0;
+
+    var windowHalfX = window.innerWidth / 2;
+    var windowHalfY = window.innerHeight / 2;
+
+//    document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+    init();
+    animate();
+
+    function init() {
+
+        container = document.createElement('div');
+        document.body.appendChild(container);
+
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100000);
+
+        scene = new THREE.Scene();
+
+        // light
+        directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+        directionalLight.position.set( 0, 1, 0 );
+        scene.add( directionalLight );
+
+        //cube
+        var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+
+        for ( var i = 0; i < geometry.faces.length; i += 2 ) {
+
+            var hex = Math.random() * 0xffffff;
+            geometry.faces[ i ].color.setHex( hex );
+            geometry.faces[ i + 1 ].color.setHex( hex );
+
+        }
+
+        var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, overdraw: 0.5 } );
+
+        cube = new THREE.Mesh( geometry, material );
+        cube.position.y = 1;
+        scene.add( cube );
+
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        container.appendChild(renderer.domElement);
+
+        effect = new THREE.HolographicEffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);
+        effect.cameraDistance = 5;
+        effect.reflectFromAbove = true;
+
+        window.addEventListener('resize', onWindowResize, false);
+
+    }
+
+    function onWindowResize() {
+
+        windowHalfX = window.innerWidth / 2,
+                windowHalfY = window.innerHeight / 2,
+                camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        effect.setSize(window.innerWidth, window.innerHeight);
+
+    }
+
+    function animate() {
+
+        requestAnimationFrame(animate);
+
+        render();
+
+    }
+
+    function render() {
+
+        camera.lookAt(scene.position);
+
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+
+        effect.render(scene, camera);
+    }
+
+</script>
+
+</body>
+</html>
