@@ -50,14 +50,10 @@
     var container;
 
     var camera, scene, renderer, effect;
-    var cube, plane, directionalLight;
-
-//    var mouseX = 0, mouseY = 0;
+    var globe, directionalLight, ambientLight;
 
     var windowHalfX = window.innerWidth / 2;
     var windowHalfY = window.innerHeight / 2;
-
-//    document.addEventListener('mousemove', onDocumentMouseMove, false);
 
     init();
     animate();
@@ -72,27 +68,24 @@
         scene = new THREE.Scene();
 
         // light
-        directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-        directionalLight.position.set( 0, 1, 0 );
-        scene.add( directionalLight );
+        ambientLight = new THREE.AmbientLight(0x444444); // soft white light
+        scene.add(ambientLight);
 
-        //cube
-        var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        directionalLight = new THREE.DirectionalLight(0xaaaaaa, 0.5);
+        directionalLight.position.set(0.5, 0, 1);
+        scene.add(directionalLight);
 
-        for ( var i = 0; i < geometry.faces.length; i += 2 ) {
+        //globe
+        var geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        var material = new THREE.MeshPhongMaterial();
+        material.map = THREE.ImageUtils.loadTexture('media/earthSatTexture.jpg');
+        material.bumpMap = THREE.ImageUtils.loadTexture('media/earthBumpMap.jpg');
+        material.bumpScale = 0.05;
+        material.specularMap = THREE.ImageUtils.loadTexture('media/earthSpecularMap.jpg');
+        material.specular  = new THREE.Color('grey');
 
-            var hex = Math.random() * 0xffffff;
-            geometry.faces[ i ].color.setHex( hex );
-            geometry.faces[ i + 1 ].color.setHex( hex );
-
-        }
-
-        var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, overdraw: 0.5 } );
-
-        cube = new THREE.Mesh( geometry, material );
-        cube.position.y = 1;
-        scene.add( cube );
-
+        globe = new THREE.Mesh(geometry, material);
+        scene.add(globe);
 
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -101,8 +94,8 @@
 
         effect = new THREE.HolographicEffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);
-        effect.cameraDistance = 5;
-        effect.reflectFromAbove = true;
+        effect.cameraDistance = 2;
+        effect.reflectFromAbove = false;
 
         window.addEventListener('resize', onWindowResize, false);
 
@@ -131,8 +124,7 @@
 
         camera.lookAt(scene.position);
 
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        globe.rotation.y += 0.001;
 
         effect.render(scene, camera);
     }

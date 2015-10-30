@@ -42,8 +42,6 @@ THREE.HolographicEffect = function (renderer) {
 
         scene.updateMatrixWorld();
 
-        console.log(scope.cameraDistance);
-
         if ( camera.parent === null ) camera.updateMatrixWorld();
 
         camera.matrixWorld.decompose( _position, _quaternion, _scale );
